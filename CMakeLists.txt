@@ -1,7 +1,4 @@
-#set(BOOST_ROOT "C:/local/boost_1_64_0/lib64-msvc-14.1/lib")
-#set(BOOSTROOT "C:/local/boost_1_64_0/lib64-msvc-14.1/lib")
-
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.10.1)
 
 set(VERSION "0.1")
 # $Format:Packaged from commit %H%nset(COMMIT %h)%nset(REFS "%d")$

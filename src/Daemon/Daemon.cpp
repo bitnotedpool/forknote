@@ -71,6 +71,7 @@ namespace
   const command_line::arg_descriptor<std::vector<std::string>> arg_genesis_block_reward_address = { "genesis-block-reward-address", "" };
   const command_line::arg_descriptor<bool> arg_blockexplorer_on = {"enable-blockexplorer", "Enable blockchain explorer RPC", false};
   const command_line::arg_descriptor<std::vector<std::string>>        arg_enable_cors = { "enable-cors", "Adds header 'Access-Control-Allow-Origin' to the daemon's RPC responses. Uses the value as domain. Use * for all" };
+  /*
   const command_line::arg_descriptor<std::string> arg_GENESIS_COINBASE_TX_HEX  = {"GENESIS_COINBASE_TX_HEX", "Genesis transaction hex", CryptoNote::parameters::GENESIS_COINBASE_TX_HEX};  
   const command_line::arg_descriptor<uint64_t>    arg_CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX  = {"CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX", "uint64_t", CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX};
   const command_line::arg_descriptor<uint64_t>    arg_MONEY_SUPPLY  = {"MONEY_SUPPLY", "uint64_t", CryptoNote::parameters::MONEY_SUPPLY};
@@ -115,6 +116,7 @@ namespace
   const command_line::arg_descriptor<uint8_t>    arg_MANDATORY_MIXIN_BLOCK_VERSION  = {"MANDATORY_MIXIN_BLOCK_VERSION", "uint8_t", CryptoNote::parameters::MANDATORY_MIXIN_BLOCK_VERSION};
   const command_line::arg_descriptor<bool>        arg_testnet_on  = {"testnet", "Used to deploy test nets. Checkpoints and hardcoded seeds are ignored, "
     "network id is changed. Use it with --data-dir flag. The wallet must be launched with --testnet flag.", false};
+  */
 }
 
 bool command_line_preprocessor(const boost::program_options::variables_map& vm, LoggerRef& logger);
@@ -122,9 +124,10 @@ void print_genesis_tx_hex(const po::variables_map& vm, LoggerManager& logManager
   std::vector<CryptoNote::AccountPublicAddress> targets;
   auto genesis_block_reward_addresses = command_line::get_arg(vm, arg_genesis_block_reward_address);
   CryptoNote::CurrencyBuilder currencyBuilder(logManager);
-    currencyBuilder.cryptonoteName(command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
-  currencyBuilder.minMixin(command_line::get_arg(vm, arg_MIN_MIXIN));
+  //currencyBuilder.cryptonoteName(command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
+  //currencyBuilder.minMixin(command_line::get_arg(vm, arg_MIN_MIXIN));
 //uint8_t recognized as char
+  /*
   if (command_line::get_arg(vm, arg_MANDATORY_MIXIN_BLOCK_VERSION) == 0) {
     currencyBuilder.mandatoryMixinBlockVersion(command_line::get_arg(vm, arg_MANDATORY_MIXIN_BLOCK_VERSION));
   } else {
@@ -189,7 +192,8 @@ void print_genesis_tx_hex(const po::variables_map& vm, LoggerManager& logManager
   currencyBuilder.difficultyLagV1(command_line::get_arg(vm, arg_DIFFICULTY_LAG_V1));
   currencyBuilder.difficultyLagV2(command_line::get_arg(vm, arg_DIFFICULTY_LAG_V2));
   currencyBuilder.difficultyCutV1(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V1));
-  currencyBuilder.difficultyCutV2(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V2));
+  currencyBuilder.difficultyCutV2(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V2)); 
+  */
 bool blockexplorer_mode = command_line::get_arg(vm, arg_blockexplorer_on);
 currencyBuilder.isBlockexplorer(blockexplorer_mode);
   CryptoNote::Currency currency = currencyBuilder.currency();
@@ -205,13 +209,15 @@ currencyBuilder.isBlockexplorer(blockexplorer_mode);
     if (CryptoNote::parameters::GENESIS_BLOCK_REWARD > 0) {
       std::cout << "Error: genesis block reward addresses are not defined" << std::endl;
     } else {
-  CryptoNote::Transaction tx = currencyBuilder.generateGenesisTransaction();
-  std::string tx_hex = Common::toHex(CryptoNote::toBinaryArray(tx));
-  std::cout << "Add this line into your coin configuration file as is: " << std::endl;
-  std::cout << "GENESIS_COINBASE_TX_HEX=" << tx_hex << std::endl;
+	  CryptoNote::Transaction tx = currencyBuilder.generateGenesisTransaction();
+	  std::string tx_hex = Common::toHex(CryptoNote::toBinaryArray(tx));
+	  std::cout << "Add this line into your coin configuration file as is: " << std::endl;
+	  std::cout << "GENESIS_COINBASE_TX_HEX=" << tx_hex << std::endl;
     }
   } else {
-  CryptoNote::CurrencyBuilder  currencyBuilder(logManager);
+  CryptoNote::CurrencyBuilder currencyBuilder(logManager);
+
+  /*
   currencyBuilder.genesisCoinbaseTxHex(command_line::get_arg(vm, arg_GENESIS_COINBASE_TX_HEX));
   currencyBuilder.publicAddressBase58Prefix(command_line::get_arg(vm, arg_CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX));
   currencyBuilder.moneySupply(command_line::get_arg(vm, arg_MONEY_SUPPLY));
@@ -262,12 +268,15 @@ currencyBuilder.isBlockexplorer(blockexplorer_mode);
   currencyBuilder.difficultyCutV1(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V1));
   currencyBuilder.difficultyCutV2(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V2));
   currencyBuilder.genesisBlockReward(command_line::get_arg(vm, arg_GENESIS_BLOCK_REWARD));
+  */
   CryptoNote::Transaction tx = currencyBuilder.generateGenesisTransaction(targets);
-    currencyBuilder.cryptonoteName(command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
-      std::string tx_hex = Common::toHex(CryptoNote::toBinaryArray(tx));
-      std::cout << "Modify this line into your coin configuration file as is: " << std::endl;
+    currencyBuilder.cryptonoteName(CryptoNote::CRYPTONOTE_NAME);
+    std::string tx_hex = Common::toHex(CryptoNote::toBinaryArray(tx));
+    std::cout << "Modify this line into your coin configuration file as is: " << std::endl;
   std::cout << "GENESIS_COINBASE_TX_HEX=" << tx_hex << std::endl;
   }
+
+
   return;
 }
 
@@ -315,6 +324,7 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_log_level);
     command_line::add_arg(desc_cmd_sett, arg_console);
     command_line::add_arg(desc_cmd_sett, arg_set_fee_address);
+	/*
     command_line::add_arg(desc_cmd_sett, arg_testnet_on);
     command_line::add_arg(desc_cmd_sett, arg_GENESIS_COINBASE_TX_HEX);
     command_line::add_arg(desc_cmd_sett, arg_CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX);
@@ -358,6 +368,7 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_MIXIN_START_HEIGHT);
     command_line::add_arg(desc_cmd_sett, arg_MIN_MIXIN);
     command_line::add_arg(desc_cmd_sett, arg_MANDATORY_MIXIN_BLOCK_VERSION);
+	*/
 command_line::add_arg(desc_cmd_sett, arg_enable_cors);
     command_line::add_arg(desc_cmd_sett, arg_blockexplorer_on);
 command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
@@ -384,10 +395,10 @@ command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
       }
 
       std::string data_dir = command_line::get_arg(vm, command_line::arg_data_dir);
-      std::string config = command_line::get_arg(vm, arg_config_file);
+      //std::string config = command_line::get_arg(vm, arg_config_file);
 
       data_dir_path = data_dir;
-      boost::filesystem::path config_path(config);
+      /*boost::filesystem::path config_path(config);
       if (!config_path.has_parent_path()) {
         config_path = data_dir_path / config_path;
       }
@@ -406,10 +417,11 @@ command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
         std::cout << "Linux/Mac:   ./forknoted --config-file configs/dashcoin.conf" << std::endl;
         return false;
       }
+	  */
       po::notify(vm);
-      if (command_line::get_arg(vm, command_line::arg_data_dir) == Tools::getDefaultDataDirectory() && command_line::has_arg(vm, arg_CRYPTONOTE_NAME) && !command_line::get_arg(vm, arg_CRYPTONOTE_NAME).empty()) {
+      /*if (command_line::get_arg(vm, command_line::arg_data_dir) == Tools::getDefaultDataDirectory() && command_line::has_arg(vm, arg_CRYPTONOTE_NAME) && !command_line::get_arg(vm, arg_CRYPTONOTE_NAME).empty()) {
         boost::replace_all(data_dir, CryptoNote::CRYPTONOTE_NAME, command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
-      }
+      }*/
       data_dir_path = data_dir;
       if (command_line::get_arg(vm, arg_print_genesis_tx)) {
         print_genesis_tx_hex(vm, logManager);
@@ -445,16 +457,17 @@ command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
 
     logger(INFO) << "Module folder: " << argv[0];
 
-    bool testnet_mode = command_line::get_arg(vm, arg_testnet_on);
-    if (testnet_mode) {
+	bool testnet_mode = false; // command_line::get_arg(vm, arg_testnet_on);
+    /*if (testnet_mode) {
       logger(INFO) << "Starting in testnet mode!";
-    }
+    }*/
 
     //create objects and link them
     CryptoNote::CurrencyBuilder currencyBuilder(logManager);
-    currencyBuilder.cryptonoteName(command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
-  currencyBuilder.minMixin(command_line::get_arg(vm, arg_MIN_MIXIN));
+    //currencyBuilder.cryptonoteName(command_line::get_arg(vm, arg_CRYPTONOTE_NAME));
+    //currencyBuilder.minMixin(command_line::get_arg(vm, arg_MIN_MIXIN));
 //uint8_t recognized as char
+	/*
   if (command_line::get_arg(vm, arg_MANDATORY_MIXIN_BLOCK_VERSION) == 0) {
     currencyBuilder.mandatoryMixinBlockVersion(command_line::get_arg(vm, arg_MANDATORY_MIXIN_BLOCK_VERSION));
   } else {
@@ -520,8 +533,10 @@ command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
   currencyBuilder.difficultyLagV2(command_line::get_arg(vm, arg_DIFFICULTY_LAG_V2));
   currencyBuilder.difficultyCutV1(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V1));
   currencyBuilder.difficultyCutV2(command_line::get_arg(vm, arg_DIFFICULTY_CUT_V2));
+  */
 bool blockexplorer_mode = command_line::get_arg(vm, arg_blockexplorer_on);
 currencyBuilder.isBlockexplorer(blockexplorer_mode);
+/*
     currencyBuilder.mixinStartHeight(command_line::get_arg(vm, arg_MIXIN_START_HEIGHT));
     currencyBuilder.killHeight(command_line::get_arg(vm, arg_KILL_HEIGHT));
     currencyBuilder.tailEmissionReward(command_line::get_arg(vm, arg_TAIL_EMISSION_REWARD));
@@ -533,6 +548,7 @@ currencyBuilder.isBlockexplorer(blockexplorer_mode);
     currencyBuilder.zawyLWMADifficultyLastBlock(command_line::get_arg(vm, arg_ZAWY_LWMA_DIFFICULTY_LAST_BLOCK));
     currencyBuilder.zawyLWMADifficultyN(command_line::get_arg(vm, arg_ZAWY_LWMA_DIFFICULTY_N));
     currencyBuilder.buggedZawyDifficultyBlockIndex(command_line::get_arg(vm, arg_BUGGED_ZAWY_DIFFICULTY_BLOCK_INDEX));
+	*/
     currencyBuilder.testnet(testnet_mode);
     try {
       currencyBuilder.currency();
@@ -544,8 +560,9 @@ currencyBuilder.isBlockexplorer(blockexplorer_mode);
 
     CryptoNote::Checkpoints checkpoints(logManager);
 std::vector<CryptoNote::CheckpointData> checkpoint_input;
-std::vector<std::string> checkpoint_args = command_line::get_arg(vm, arg_CHECKPOINT);
+//std::vector<std::string> checkpoint_args = command_line::get_arg(vm, arg_CHECKPOINT);
 std::vector<std::string> checkpoint_blockIds;
+/*
 if (command_line::has_arg(vm, arg_CHECKPOINT) && checkpoint_args.size() != 0)
 {
   for(const std::string& str: checkpoint_args) {
@@ -564,10 +581,11 @@ else
       checkpoint_input = CryptoNote::CHECKPOINTS;
   }
 }
+*/
     if (!testnet_mode) {
-for (const auto& cp : checkpoint_input) {
-        checkpoints.addCheckpoint(cp.index, cp.blockId);
-      }
+		for (const auto& cp : checkpoint_input) {
+			checkpoints.addCheckpoint(cp.index, cp.blockId);
+		}
     }
     
     NetNodeConfig netNodeConfig;
@@ -582,15 +600,15 @@ for (const auto& cp : checkpoint_input) {
     dbConfig.init(vm);
 
     dbConfig.setDataDir(data_dir_path.string());
-    if (dbConfig.isConfigFolderDefaulted()) {
+    //if (dbConfig.isConfigFolderDefaulted()) {
       if (!Tools::create_directories_if_necessary(dbConfig.getDataDir())) {
         throw std::runtime_error("Can't create directory: " + dbConfig.getDataDir());
       }
-    } else {
-      if (!Tools::directoryExists(dbConfig.getDataDir())) {
-        throw std::runtime_error("Directory does not exist: " + dbConfig.getDataDir());
-      }
-    }
+    //} else {
+    //  if (!Tools::directoryExists(dbConfig.getDataDir())) {
+    //    throw std::runtime_error("Directory does not exist: " + dbConfig.getDataDir());
+    //  }
+    //}
 
     RocksDBWrapper database(logManager);
     database.init(dbConfig);

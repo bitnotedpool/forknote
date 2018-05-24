@@ -93,10 +93,14 @@ bool Currency::generateGenesisBlock() {
   //constructMinerTx(0, 0, 0, 0, 0, ac, m_genesisBlock.baseTransaction); // zero fee in genesis
   //BinaryArray txb = toBinaryArray(m_genesisBlock.baseTransaction);
   //std::string hex_tx_represent = Common::toHex(txb);
+  //Hard code coinbase tx in genesis block, because through generating tx use random, but genesis should be always the same
+  //std::string genesisCoinbaseTxHex = m_genesisCoinbaseTxHex;
 
-  // Hard code coinbase tx in genesis block, because through generating tx use random, but genesis should be always the same
-  std::string genesisCoinbaseTxHex = m_genesisCoinbaseTxHex;
+  //hardcoded because sky is blue
+  std::string genesisCoinbaseTxHex = "010801ff0001e2e68a08029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101f22ed4c7f6120806dfbad2504a2e044bc999184c6424f77ccd9408425404fdd6";
   BinaryArray minerTxBlob;
+
+  //logger(ERROR, BRIGHT_RED) << genesisCoinbaseTxHex;
 
   bool r =
     fromHex(genesisCoinbaseTxHex, minerTxBlob) &&
