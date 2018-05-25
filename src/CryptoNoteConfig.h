@@ -40,12 +40,12 @@ namespace CryptoNote {
 		const uint64_t		GENESIS_BLOCK_REWARD = 0;
 		const uint64_t		TAIL_EMISSION_REWARD = 88888;
 		const size_t		CRYPTONOTE_COIN_VERSION = 1;
-		const uint32_t		ZAWY_DIFFICULTY_BLOCK_INDEX = 0;
-		const uint32_t		ZAWY_DIFFICULTY_LAST_BLOCK = 0;
-		const uint32_t		ZAWY_LWMA_DIFFICULTY_BLOCK_INDEX = 0;
+		const uint32_t		ZAWY_DIFFICULTY_BLOCK_INDEX = 0; //old
+		const uint32_t		ZAWY_DIFFICULTY_LAST_BLOCK = 0; //old
+		const uint32_t		ZAWY_LWMA_DIFFICULTY_BLOCK_INDEX = 8;
 		const uint32_t		ZAWY_LWMA_DIFFICULTY_LAST_BLOCK = 0;
 		const size_t		ZAWY_LWMA_DIFFICULTY_N = 0;
-		const uint32_t		BUGGED_ZAWY_DIFFICULTY_BLOCK_INDEX = 0;
+		const uint32_t		BUGGED_ZAWY_DIFFICULTY_BLOCK_INDEX = 0; //old
 
 		static_assert(EMISSION_SPEED_FACTOR <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
 

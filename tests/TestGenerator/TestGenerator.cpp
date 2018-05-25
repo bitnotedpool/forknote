@@ -68,13 +68,11 @@ uint64_t test_generator::getAlreadyGeneratedCoins(const BlockTemplate& blk) cons
   return getAlreadyGeneratedCoins(cblk.getBlockHash());
 }
 
-void test_generator::addBlock(const CryptoNote::CachedBlock& blk, size_t tsxSize, uint64_t fee,
-                              std::vector<size_t>& blockSizes, uint64_t alreadyGeneratedCoins) {
+void test_generator::addBlock(const CryptoNote::CachedBlock& blk, size_t tsxSize, uint64_t fee,std::vector<size_t>& blockSizes, uint64_t alreadyGeneratedCoins) {
   const auto blockSize = tsxSize + getObjectBinarySize(blk.getBlock().baseTransaction);
   int64_t emissionChange;
   uint64_t blockReward;
-  m_currency.getBlockReward(blk.getBlock().majorVersion, Common::medianValue(blockSizes), blockSize,
-                            alreadyGeneratedCoins, fee, blockReward, emissionChange);
+  m_currency.getBlockReward(blk.getBlock().majorVersion, Common::medianValue(blockSizes), blockSize,alreadyGeneratedCoins, fee, blockReward, emissionChange, blk.getBlockIndex());
   m_blocksInfo[blk.getBlockHash()] = BlockInfo(blk.getBlock().previousBlockHash, alreadyGeneratedCoins + emissionChange, blockSize);
 }
 
@@ -321,7 +319,7 @@ bool constructMinerTxManually(const CryptoNote::Currency& currency, uint8_t bloc
   // This will work, until size of constructed block is less then currency.blockGrantedFullRewardZone()
   int64_t emissionChange;
   uint64_t blockReward;
-  if (!currency.getBlockReward(blockMajorVersion, 0, 0, alreadyGeneratedCoins, fee, blockReward, emissionChange)) {
+  if (!currency.getBlockReward(blockMajorVersion, 0, 0, alreadyGeneratedCoins, fee, blockReward, emissionChange, height)) {
     std::cerr << "Block is too big" << std::endl;
     return false;
   }

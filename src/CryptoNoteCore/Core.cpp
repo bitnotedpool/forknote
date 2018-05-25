@@ -149,16 +149,14 @@ TransactionValidatorState extractSpentOutputs(const std::vector<CachedTransactio
   return resultOutputs;
 }
 
-int64_t getEmissionChange(const Currency& currency, IBlockchainCache& segment, uint32_t previousBlockIndex,
-                          const CachedBlock& cachedBlock, uint64_t cumulativeSize, uint64_t cumulativeFee) {
+int64_t getEmissionChange(const Currency& currency, IBlockchainCache& segment, uint32_t previousBlockIndex, const CachedBlock& cachedBlock, uint64_t cumulativeSize, uint64_t cumulativeFee) {
 
   uint64_t reward = 0;
   int64_t emissionChange = 0;
   auto alreadyGeneratedCoins = segment.getAlreadyGeneratedCoins(previousBlockIndex);
   auto lastBlocksSizes = segment.getLastBlocksSizes(currency.rewardBlocksWindow(), previousBlockIndex, addGenesisBlock);
   auto blocksSizeMedian = Common::medianValue(lastBlocksSizes);
-  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,
-                               cumulativeSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange)) {
+  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian, cumulativeSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange, cachedBlock.getBlockIndex())) {
     throw std::system_error(make_error_code(error::BlockValidationError::CUMULATIVE_BLOCK_SIZE_TOO_BIG));
   }
 
@@ -561,7 +559,7 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   bool addOnTop = cache->getTopBlockIndex() == previousBlockIndex;
   auto maxBlockCumulativeSize = currency.maxBlockCumulativeSize(previousBlockIndex + 1);
   if (cumulativeBlockSize > maxBlockCumulativeSize) {
-    logger(Logging::WARNING) << "Block " << cachedBlock.getBlockHash() << " has too big cumulative size";
+    logger(Logging::WARNING) << "Block " << cachedBlock.getBlockHash() << " has too big cumulative size [1]";
     return error::BlockValidationError::CUMULATIVE_BLOCK_SIZE_TOO_BIG;
   }
 
@@ -608,9 +606,8 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   auto lastBlocksSizes = cache->getLastBlocksSizes(currency.rewardBlocksWindow(), previousBlockIndex, addGenesisBlock);
   auto blocksSizeMedian = Common::medianValue(lastBlocksSizes);
 
-  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,
-                               cumulativeBlockSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange)) {
-    logger(Logging::WARNING) << "Block " << cachedBlock.getBlockHash() << " has too big cumulative size";
+  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,cumulativeBlockSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange, cache->getBlockIndex(cachedBlock.getBlockHash()))) {
+    logger(Logging::WARNING) << "Block " << cachedBlock.getBlockHash() << " has too big cumulative size [2]";
     return error::BlockValidationError::CUMULATIVE_BLOCK_SIZE_TOO_BIG;
   }
 
@@ -2010,12 +2007,11 @@ BlockDetails Core::getBlockDetails(const Crypto::Hash& blockHash) const {
   }
 
   int64_t emissionChange = 0;
-  bool result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, 0, prevBlockGeneratedCoins, 0, blockDetails.baseReward, emissionChange);
+  bool result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, 0, prevBlockGeneratedCoins, 0, blockDetails.baseReward, emissionChange, blockDetails.index);
   assert(result);
 
   uint64_t currentReward = 0;
-  result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, blockDetails.transactionsCumulativeSize,
-                                   prevBlockGeneratedCoins, 0, currentReward, emissionChange);
+  result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, blockDetails.transactionsCumulativeSize,prevBlockGeneratedCoins, 0, currentReward, emissionChange, blockDetails.index);
   assert(result);
 
   if (blockDetails.baseReward == 0 && currentReward == 0) {

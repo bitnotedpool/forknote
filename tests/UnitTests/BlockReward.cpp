@@ -50,7 +50,7 @@ namespace
     int64_t m_emissionChange;
     uint64_t m_blockReward;
   };
-
+  /*
   #define TEST_ALREADY_GENERATED_COINS(alreadyGeneratedCoins, expectedReward)              \
     m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_1, 0, currentBlockSize, \
       alreadyGeneratedCoins, 0, m_blockReward, m_emissionChange);                          \
@@ -77,7 +77,7 @@ namespace
     TEST_ALREADY_GENERATED_COINS(m_currency.moneySupply() - 1, 0);
     TEST_ALREADY_GENERATED_COINS(m_currency.moneySupply(), 0);
   }
-
+  */
   //--------------------------------------------------------------------------------------------------------------------
   class getBlockReward_and_median_and_blockSize : public ::testing::Test {
   public:
@@ -94,14 +94,13 @@ namespace
     static const uint64_t alreadyGeneratedCoins = 0;
 
     virtual void SetUp() override {
-      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_1, 0, 0, alreadyGeneratedCoins, 0, m_standardBlockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_1, 0, 0, alreadyGeneratedCoins, 0, m_standardBlockReward, m_emissionChange, height);
       ASSERT_FALSE(m_blockTooBig);
       ASSERT_EQ(UINT64_C(70368744177663), m_standardBlockReward);
     }
 
     void do_test(size_t medianBlockSize, size_t currentBlockSize) {
-      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_1, medianBlockSize, currentBlockSize, alreadyGeneratedCoins, 0,
-        m_blockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_1, medianBlockSize, currentBlockSize, alreadyGeneratedCoins, 0, m_blockReward, m_emissionChange, height);
     }
 
     Logging::LoggerGroup m_logger;
@@ -110,6 +109,7 @@ namespace
     int64_t m_emissionChange;
     uint64_t m_blockReward;
     uint64_t m_standardBlockReward;
+	uint32_t height;
   };
 
   TEST_F(getBlockReward_and_median_and_blockSize, handles_zero_median) {
@@ -190,14 +190,14 @@ namespace
     static const uint64_t alreadyGeneratedCoins = 0;
 
     virtual void SetUp() override {
-      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedian, 0, alreadyGeneratedCoins, 0, m_standardBlockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedian, 0, alreadyGeneratedCoins, 0, m_standardBlockReward, m_emissionChange, height);
 
       ASSERT_FALSE(m_blockTooBig);
       ASSERT_EQ(UINT64_C(70368744177663), m_standardBlockReward);
     }
 
     void do_test(size_t currentBlockSize) {
-      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedian, currentBlockSize, alreadyGeneratedCoins, 0, m_blockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedian, currentBlockSize, alreadyGeneratedCoins, 0, m_blockReward, m_emissionChange, height);
     }
 
     Logging::LoggerGroup m_logger;
@@ -206,6 +206,7 @@ namespace
     int64_t m_emissionChange;
     uint64_t m_blockReward;
     uint64_t m_standardBlockReward;
+	uint32_t  height;
   };
 
   TEST_F(getBlockReward_and_currentBlockSize, handles_zero_block_size) {
@@ -296,8 +297,9 @@ namespace
     virtual void SetUp() override {
       uint64_t blockReward;
       int64_t emissionChange;
+	  uint32_t  height;
 
-      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedianV1, testBlockSizeV1, 0, 0, blockReward, emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(BLOCK_MAJOR_VERSION_3, testMedianV1, testBlockSizeV1, 0, 0, blockReward, emissionChange, height);
 
       ASSERT_FALSE(m_blockTooBig);
       ASSERT_EQ(expectedBlockReward, blockReward);
@@ -305,11 +307,11 @@ namespace
     }
 
     void do_testV1(uint64_t alreadyGeneratedCoins, uint64_t fee) {
-      m_blockTooBig = !m_currency.getBlockReward(CryptoNote::BLOCK_MAJOR_VERSION_1, testMedianV1, testBlockSizeV1, alreadyGeneratedCoins, fee, m_blockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(CryptoNote::BLOCK_MAJOR_VERSION_1, testMedianV1, testBlockSizeV1, alreadyGeneratedCoins, fee, m_blockReward, m_emissionChange, height);
     }
 
     void do_testV2(uint64_t alreadyGeneratedCoins, uint64_t fee) {
-      m_blockTooBig = !m_currency.getBlockReward(CryptoNote::BLOCK_MAJOR_VERSION_2, testMedianV2, testBlockSizeV2, alreadyGeneratedCoins, fee, m_blockReward, m_emissionChange);
+      m_blockTooBig = !m_currency.getBlockReward(CryptoNote::BLOCK_MAJOR_VERSION_2, testMedianV2, testBlockSizeV2, alreadyGeneratedCoins, fee, m_blockReward, m_emissionChange, height);
     }
 
     Logging::LoggerGroup m_logger;
@@ -317,6 +319,7 @@ namespace
     bool m_blockTooBig;
     int64_t m_emissionChange;
     uint64_t m_blockReward;
+	uint32_t  height;
   };
 
   TEST_F(getBlockReward_fee_and_penalizeFee_test, handles_zero_fee_and_no_penalize_fee) {
