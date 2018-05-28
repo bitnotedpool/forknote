@@ -116,7 +116,7 @@ const CryptoNote::AccountBase& TestBlockchainGenerator::getMinerAccount() const 
 void TestBlockchainGenerator::addGenesisBlock() {
   std::vector<size_t> bsizes;
   CryptoNote::CachedBlock genesisBlock(m_currency.genesisBlock());
-  generator.addBlock(genesisBlock, 0, 0, bsizes, 0);
+  generator.addBlock(genesisBlock, 0, 0, bsizes, 0, 0);
 
   m_blockchain.push_back(m_currency.genesisBlock());
   addTx(m_currency.genesisBlock().baseTransaction);

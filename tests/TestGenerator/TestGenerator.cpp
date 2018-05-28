@@ -68,11 +68,11 @@ uint64_t test_generator::getAlreadyGeneratedCoins(const BlockTemplate& blk) cons
   return getAlreadyGeneratedCoins(cblk.getBlockHash());
 }
 
-void test_generator::addBlock(const CryptoNote::CachedBlock& blk, size_t tsxSize, uint64_t fee,std::vector<size_t>& blockSizes, uint64_t alreadyGeneratedCoins) {
+void test_generator::addBlock(const CryptoNote::CachedBlock& blk, size_t tsxSize, uint64_t fee, std::vector<size_t>& blockSizes, uint64_t alreadyGeneratedCoins, uint32_t height) {
   const auto blockSize = tsxSize + getObjectBinarySize(blk.getBlock().baseTransaction);
   int64_t emissionChange;
   uint64_t blockReward;
-  m_currency.getBlockReward(blk.getBlock().majorVersion, Common::medianValue(blockSizes), blockSize,alreadyGeneratedCoins, fee, blockReward, emissionChange, blk.getBlockIndex());
+  m_currency.getBlockReward(blk.getBlock().majorVersion, Common::medianValue(blockSizes), blockSize, alreadyGeneratedCoins, fee, blockReward, emissionChange, height);
   m_blocksInfo[blk.getBlockHash()] = BlockInfo(blk.getBlock().previousBlockHash, alreadyGeneratedCoins + emissionChange, blockSize);
 }
 
@@ -165,7 +165,7 @@ bool test_generator::constructBlock(CryptoNote::BlockTemplate& blk, uint32_t hei
   }
 
   CachedBlock cachedBlk2(blk);
-  addBlock(cachedBlk2, txsSize, totalFee, blockSizes, alreadyGeneratedCoins);
+  addBlock(cachedBlk2, txsSize, totalFee, blockSizes, alreadyGeneratedCoins, height);
 
   return true;
 }
@@ -247,7 +247,7 @@ bool test_generator::constructBlockManually(BlockTemplate& blk, const BlockTempl
   }
 
   CachedBlock cachedBlk2(blk);
-  addBlock(cachedBlk2, txsSizes, fee, blockSizes, alreadyGeneratedCoins);
+  addBlock(cachedBlk2, txsSizes, fee, blockSizes, alreadyGeneratedCoins, height);
 
   return true;
 }
@@ -303,8 +303,7 @@ void fillNonce(CryptoNote::BlockTemplate& blk, const Difficulty& diffic) {
   }
 }
 
-bool constructMinerTxManually(const CryptoNote::Currency& currency, uint8_t blockMajorVersion, uint32_t height, uint64_t alreadyGeneratedCoins,
-                              const AccountPublicAddress& minerAddress, Transaction& tx, uint64_t fee, KeyPair* pTxKey/* = 0*/) {
+bool constructMinerTxManually(const CryptoNote::Currency& currency, uint8_t blockMajorVersion, uint32_t height, uint64_t alreadyGeneratedCoins, const AccountPublicAddress& minerAddress, Transaction& tx, uint64_t fee, KeyPair* pTxKey/* = 0*/) {
   KeyPair txkey = generateKeyPair();
   addTransactionPublicKeyToExtra(tx.extra, txkey.publicKey);
 
