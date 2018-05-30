@@ -369,10 +369,10 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_MIN_MIXIN);
     command_line::add_arg(desc_cmd_sett, arg_MANDATORY_MIXIN_BLOCK_VERSION);
 	*/
-command_line::add_arg(desc_cmd_sett, arg_enable_cors);
-    command_line::add_arg(desc_cmd_sett, arg_blockexplorer_on);
-command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
-  command_line::add_arg(desc_cmd_sett, arg_genesis_block_reward_address);
+	command_line::add_arg(desc_cmd_sett, arg_enable_cors);
+	command_line::add_arg(desc_cmd_sett, arg_blockexplorer_on);
+	command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
+	command_line::add_arg(desc_cmd_sett, arg_genesis_block_reward_address);
 
     RpcServerConfig::initOptions(desc_cmd_sett);
     NetNodeConfig::initOptions(desc_cmd_sett);
@@ -449,7 +449,21 @@ command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
     // configure logging
     logManager.configure(buildLoggerConfiguration(cfgLogLevel, cfgLogFile));
 
-    logger(INFO) << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG;
+    logger(INFO, DEFAULT) << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG;
+	logger(INFO, BLUE) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_BLUE) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, GREEN) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_GREEN) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, RED) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_RED) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, YELLOW) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_YELLOW) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, WHITE) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_WHITE) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, CYAN) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_CYAN) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, MAGENTA) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
+	logger(INFO, BRIGHT_MAGENTA) << "Octonit cryptocurrency OCTONIT octo OCTO Transfer Open Block found Reward fee 13842.5697"; //ntc
 
     if (command_line_preprocessor(vm, logger)) {
       return 0;

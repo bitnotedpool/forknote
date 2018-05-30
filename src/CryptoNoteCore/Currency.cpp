@@ -33,7 +33,7 @@
 
 #undef ERROR
 
-const uint64_t	DIFFICULTY_MIN = 1000;
+const uint64_t	DIFFICULTY_MIN = 100; //HY change to 88888
 
 using namespace Logging;
 using namespace Common;
@@ -205,30 +205,41 @@ namespace CryptoNote {
 		}
 
 		logger(INFO, BRIGHT_YELLOW) << "height: " << height; //ntc
-
-		/*
 		logger(INFO, BRIGHT_YELLOW) << "alreadyGeneratedCoins: " << alreadyGeneratedCoins; //ntc
-		logger(INFO, BRIGHT_YELLOW) << "baseReward: " << baseReward; //ntc		
+		//logger(INFO, BRIGHT_YELLOW) << "baseReward: " << baseReward; //ntc		
 
-		if (height == 2) {
-			//LOG_PRINT_YELLOW("get_block_reward PREMINED", LOG_LEVEL_0); //ntc
-			baseReward = 17777777777;
+		if (height < 6) {
+			if (height == 1) {
+				baseReward = 88888880000; //block reward for Bounties, Giveaways, etc...
+			}
+			else if (height == 2) {
+				baseReward = 44444440000; //block reward for Dev #1
+			}
+			else if (height == 3) {
+				baseReward = 44444440000; //block reward for Dev #2
+			}
+			else if (height == 4) {
+				baseReward = 44444440000; //block reward for Dev #3
+			}
+			else if (height == 5) {
+				baseReward = 44444440000; //block reward for Dev #4
+			}
+			//logger(INFO, BRIGHT_YELLOW) << "baseReward for blocks < 6: " << baseReward; //ntc
 		}
 
-		if ((height % 100) == 88) {
+		if ((height % 10) == 8) { //change to 100/88
 			baseReward = baseReward * 2;
-			//LOG_PRINT_YELLOW("get_block_reward BONUS BLOCK " << base_reward, LOG_LEVEL_0); //ntc
-		}*/
+			logger(INFO, BRIGHT_YELLOW) << "BONUS BLOCK: " << baseReward; //ntc
+		}
 
 		if (alreadyGeneratedCoins + baseReward >= m_moneySupply) {
 			baseReward = 0;
 		}
 
-
-
 		size_t blockGrantedFullRewardZone = blockGrantedFullRewardZoneByBlockVersion(blockMajorVersion);
 		medianSize = std::max(medianSize, blockGrantedFullRewardZone);
 		if (currentBlockSize > UINT64_C(2) * medianSize) {
+			logger(ERROR, BRIGHT_RED) << "Block cumulative size is too big: " << currentBlockSize << ", expected less than " << 2 * medianSize; //ntc
 			logger(TRACE) << "Block cumulative size is too big: " << currentBlockSize << ", expected less than " << 2 * medianSize;
 			return false;
 		}
@@ -242,6 +253,11 @@ namespace CryptoNote {
 		emissionChange = penalizedBaseReward - (fee - penalizedFee);
 		reward = penalizedBaseReward + penalizedFee;
 
+		uint64_t cut; //23456 | 91234
+		cut = reward % 10000; //3456 | 1234
+		reward = reward - cut;
+
+		logger(INFO, BRIGHT_YELLOW) << "Final reward: " << reward << " cut: " << cut; //ntc
 		return true;
 	}
 
@@ -550,7 +566,7 @@ namespace CryptoNote {
 	}
 	//don't use
 	Difficulty Currency::nextDifficultyZawyV1(uint8_t version, uint32_t blockIndex, std::vector<uint64_t> timestamps, std::vector<Difficulty> cumulativeDifficulties) const {
-		logger(ERROR, BRIGHT_RED) << "nextDifficultyZawyV1 " << blockIndex << "!!!!!!!!"; //ntc
+		logger(ERROR, BRIGHT_RED) << "nextDifficultyZawyV1 #" << blockIndex << "!!!!!!!!"; //ntc
 		// Difficulty calculation based on Zawy difficulty algorithm v1.0
 		// next Diff = Avg past N Diff * TargetInterval / Avg past N solve times
 		// as described at https://github.com/monero-project/research-lab/issues/3
@@ -623,7 +639,7 @@ namespace CryptoNote {
 	
 	//use this
 	Difficulty Currency::nextDifficultyZawyLWMA(uint8_t version, uint32_t blockIndex, std::vector<uint64_t> timestamps, std::vector<Difficulty> cumulativeDifficulties) const {
-		logger(INFO, BRIGHT_YELLOW) << "nextDifficultyZawyLWMA " << blockIndex; //ntc
+		logger(INFO, BRIGHT_YELLOW) << "nextDifficultyZawyLWMA #" << blockIndex; //ntc
 		// LWMA difficulty algorithm
 		// Copyright (c) 2017-2018 Zawy
 		// MIT license http://www.opensource.org/licenses/mit-license.php.
@@ -700,7 +716,7 @@ namespace CryptoNote {
 	}
 	
 	Difficulty Currency::nextDifficultyDefault(uint8_t version, uint32_t blockIndex, std::vector<uint64_t> timestamps, std::vector<Difficulty> cumulativeDifficulties) const {
-		return 888;
+		return 88; //8888
 		logger(INFO, BRIGHT_RED) << "nextDifficultyDefault should not happen" << blockIndex; //ntc
 		//rest of code not used
 		size_t c_difficultyWindow = difficultyWindowByBlockVersion(version);

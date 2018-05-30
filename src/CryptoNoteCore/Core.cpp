@@ -606,14 +606,13 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   auto lastBlocksSizes = cache->getLastBlocksSizes(currency.rewardBlocksWindow(), previousBlockIndex, addGenesisBlock);
   auto blocksSizeMedian = Common::medianValue(lastBlocksSizes);
 
-  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,cumulativeBlockSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange, previousBlockIndex)) {
+  if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,cumulativeBlockSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange, (previousBlockIndex+1))) {
     logger(Logging::WARNING) << "Block " << cachedBlock.getBlockHash() << " has too big cumulative size [2]";
     return error::BlockValidationError::CUMULATIVE_BLOCK_SIZE_TOO_BIG;
   }
 
   if (minerReward != reward) {
-    logger(Logging::WARNING) << "Block reward mismatch for block " << cachedBlock.getBlockHash()
-                             << ". Expected reward: " << reward << ", got reward: " << minerReward;
+    logger(Logging::WARNING) << "Block reward mismatch for block " << cachedBlock.getBlockHash() << ". Expected reward: " << reward << ", got reward: " << minerReward;
     return error::BlockValidationError::BLOCK_REWARD_MISMATCH;
   }
 
