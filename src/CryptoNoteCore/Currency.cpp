@@ -100,10 +100,12 @@ namespace CryptoNote {
 		//std::string genesisCoinbaseTxHex = m_genesisCoinbaseTxHex;
 
 		//hardcoded because sky is blue
-		std::string genesisCoinbaseTxHex = "010801ff0001e2e68a08029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101f22ed4c7f6120806dfbad2504a2e044bc999184c6424f77ccd9408425404fdd6";
+		//std::string genesisCoinbaseTxHex = "010801ff0001e2e68a08029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101f22ed4c7f6120806dfbad2504a2e044bc999184c6424f77ccd9408425404fdd6";
+		std::string genesisCoinbaseTxHex = "010a01ff0001000296eacf1ed081321634e6f1fd75185f5707836ca5b13d06ea1b5958a62a00ea6e2101bec639217897c80859e794057a1352bcc1dd8d474a5d91fe28494afdbb9e3bfd";
+		
 		BinaryArray minerTxBlob;
 
-		//logger(ERROR, BRIGHT_RED) << genesisCoinbaseTxHex;
+		//logger(INFO, BRIGHT_RED) << genesisCoinbaseTxHex;
 
 		bool r =
 			fromHex(genesisCoinbaseTxHex, minerTxBlob) &&
@@ -118,9 +120,7 @@ namespace CryptoNote {
 		genesisBlockTemplate.minorVersion = BLOCK_MINOR_VERSION_0;
 		genesisBlockTemplate.timestamp = 0;
 		genesisBlockTemplate.nonce = 70;
-		if (m_testnet) {
-			++genesisBlockTemplate.nonce;
-		}
+		//if (m_testnet) {++genesisBlockTemplate.nonce;}
 		//miner::find_nonce_for_given_block(bl, 1, 0);
 		cachedGenesisBlock.reset(new CachedBlock(genesisBlockTemplate));
 		return true;
@@ -196,10 +196,10 @@ namespace CryptoNote {
 		assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
 
 		uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
-		if (alreadyGeneratedCoins == 0 && m_genesisBlockReward != 0) {
+		/*if (alreadyGeneratedCoins == 0 && m_genesisBlockReward != 0) {
 			baseReward = m_genesisBlockReward;
 			std::cout << "Genesis block reward: " << baseReward << std::endl;
-		}
+		}*/
 		if (baseReward < m_tailEmissionReward) {
 			baseReward = m_tailEmissionReward;
 		}
@@ -244,20 +244,20 @@ namespace CryptoNote {
 			return false;
 		}
 
+		uint64_t cut; //23456 | 91234
+		cut = baseReward % 10000; //3456 | 1234
+		baseReward = baseReward - cut;
+
 		uint64_t penalizedBaseReward = getPenalizedAmount(baseReward, medianSize, currentBlockSize);
 		uint64_t penalizedFee = blockMajorVersion >= BLOCK_MAJOR_VERSION_2 ? getPenalizedAmount(fee, medianSize, currentBlockSize) : fee;
 		if (cryptonoteCoinVersion() == 1) {
 			penalizedFee = getPenalizedAmount(fee, medianSize, currentBlockSize);
-		}
+		}		
 
 		emissionChange = penalizedBaseReward - (fee - penalizedFee);
-		reward = penalizedBaseReward + penalizedFee;
+		reward = penalizedBaseReward + penalizedFee;	
 
-		uint64_t cut; //23456 | 91234
-		cut = reward % 10000; //3456 | 1234
-		reward = reward - cut;
-
-		logger(INFO, BRIGHT_YELLOW) << "Final reward: " << reward << " cut: " << cut; //ntc
+		logger(INFO, BRIGHT_YELLOW) << "Final reward: " << reward << " baseReward: " << baseReward << " cut: " << cut << " emissionChange: " << emissionChange; //ntc
 		return true;
 	}
 
